@@ -5,7 +5,7 @@ namespace duncan3dc\MetaAudio\Modules;
 use duncan3dc\MetaAudio\File;
 
 /**
- * Base class for modules to extend
+ * Base class for modules to extend.
  */
 abstract class AbstractModule implements ModuleInterface
 {
@@ -111,10 +111,40 @@ abstract class AbstractModule implements ModuleInterface
     abstract protected function putTags(array $tags);
 
 
+    /**
+     * Save the changes currently pending.
+     *
+     * @return static
+     */
+    public function save()
+    {
+        $this->putTags($this->tags);
+        return $this;
+    }
+
+
+    /**
+     * Throw away any pending changes.
+     *
+     * @return static
+     */
+    public function revert()
+    {
+        $this->tags = null;
+        $this->saveChanges = false;
+        return $this;
+    }
+
+
+    /**
+     * Ensure changes are saved automatically when the object is destroyed.
+     *
+     * @return void
+     */
     public function __destruct()
     {
         if ($this->saveChanges) {
-            $this->putTags($this->tags);
+            $this->save();
         }
     }
 }
